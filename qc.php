@@ -9,6 +9,7 @@
 		ini_set('max_execution_time', 0);
 
 
+		// Prepare the request
 		function aws_query($extraparams) {
 		    $private_key = '+TRLuYQwpIcVdsJqKnBmvLIw0CE1D+UJtzkxGgKX';
 
@@ -22,8 +23,7 @@
 		        "AWSAccessKeyId" => "AKIAJNXHGOZUG74NG6QA",
 		        "Timestamp" => gmdate("Y-m-d\TH:i:s\Z"),
 		        "SignatureMethod" => "HmacSHA256",
-		        "SignatureVersion" => "2",
-		       // "Version" => "2016-10-27"
+		        "SignatureVersion" => "2"
 		    );
 
 		    foreach ($extraparams as $param => $value) {
@@ -53,17 +53,13 @@
 		    $signature = base64_encode(
 		        hash_hmac("sha256", $string_to_sign, $private_key, True));
 
-		    // encode the signature for the equest
+		    // Encode the signature for the request
 		    $signature = str_replace("%7E", "~", rawurlencode($signature));
 
 		    // Put the signature into the parameters
 		    $params["Signature"] = $signature;
 		    uksort($params, "strnatcasecmp");
 
-		    // TODO: the timestamp colons get urlencoded by http_build_query
-		    //       and then need to be urldecoded to keep AWS happy. Spaces
-		    //       get reencoded as %20, as the + encoding doesn't work with 
-		    //       AWS
 		    $query = urldecode(http_build_query($params));
 		    $query = str_replace(' ', '%20', $query);
 
@@ -88,6 +84,7 @@
 			    ));
 		}
 
+		// Send request
 		function get_curl($url){
 
 		    $ch = curl_init();
@@ -143,7 +140,7 @@
 	
 
 
-	   // LOAD EXCEL FILE
+	   // Load info from excel file into an array
         function loadFile(){
 
         	$file_destination = getFile();
@@ -179,6 +176,7 @@
 		}
 
 
+		// Get product info from the request
 	    function getPageAttributes($xml){
 	        if(isset($xml->Items->Request->Errors->Error->Message)){
 		    	$errorMsg = $xml->Items->Request->Errors->Error->Message;	
@@ -217,6 +215,8 @@
 		    }
 	    }
 
+
+	    // Clear text for Description, Bullets and Title
 	    function clearDescription($desc){
          	 $page_no_apostrophy = str_replace('’', '\'', $desc);
          	 $page_no_apostrophy2 = str_replace('”', '"', $page_no_apostrophy);
@@ -285,8 +285,8 @@
 		}
 	         
         function run(){
-			//Load ASINs
 
+			//Load ASINs
 		    $productArray = loadFile();
 
 			$errors_file = new PHPExcel();
@@ -330,6 +330,7 @@
 					$excel_desc = $row[2];
 
 					$excel_bullets = array();
+
 					//Check which is the last key to be used for extracting bullets
 				    end($row);
 					$last_key = key($row);				
@@ -360,10 +361,12 @@
 					if($page_title != $excel_title){
 						echo "<td class='error'>Error</td>";
 						$errors_file->getActiveSheet()->getCell('A'. $row_no)->setValue($ASIN);
-					//	echo "Title is different." . "\n";
-					//	var_dump($excel_title);
-					//	var_dump($page_title);
-					//	exec('pause');
+					/*	
+						echo "Title is different." . "\n";
+						var_dump($excel_title);
+						var_dump($page_title);
+						exec('pause');
+					*/
 					} else {		
 						echo "<td class='match'>Match</td>";
 					}
@@ -371,10 +374,12 @@
 					if($page_description != $excel_description){
 						echo "<td class='error'>Error</td>";
 						$errors_file->getActiveSheet()->getCell('A'. $row_no)->setValue($ASIN);
-					//	echo "Description is different." . "\n";
-					//	var_dump($excel_description);
-					//	var_dump($page_description);
-					//	exec('pause');
+					/*	
+						echo "Description is different." . "\n";
+						var_dump($excel_description);
+						var_dump($page_description);
+						exec('pause');
+					*/
 					} else {
 						echo "<td class='match'>Match</td>";
 						
@@ -405,7 +410,7 @@
 
 					echo "</tr>";
 			}
-				$objWriter->save("C:/xampp/htdocs/quality-checker-under-development/Files/errors.xlsx");
+				$objWriter->save("Files/errors.xlsx");
 		}
 		// END OF FOREACH	
       }
