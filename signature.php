@@ -1,7 +1,7 @@
 <?php 
 
 function aws_query($extraparams) {
-    $private_key = '+TRLuYQwpIcVdsJqKnBmvLIw0CE1D+UJtzkxGgKX';
+    $private_key = '';
 
     $method = "GET";
     $host = "webservices.amazon.com";
@@ -10,7 +10,7 @@ function aws_query($extraparams) {
     $params = array(
         "AssociateTag" => "asdf08e-20",
         "Service" => "AWSECommerceService",
-        "AWSAccessKeyId" => "AKIAJNXHGOZUG74NG6QA",
+        "AWSAccessKeyId" => "",
         "Timestamp" => gmdate("Y-m-d\TH:i:s\Z"),
         "SignatureMethod" => "HmacSHA256",
         "SignatureVersion" => "2",
